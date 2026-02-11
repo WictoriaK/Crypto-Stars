@@ -1,1 +1,5 @@
-console.log('Привет, мир!');
+import {renderContractorsProfiles} from './contractors.js';
+import {renderUserProfile} from './set-user.js';
+
+renderUserProfile();
+renderContractorsProfiles();
