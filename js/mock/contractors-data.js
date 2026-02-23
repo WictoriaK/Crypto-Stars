@@ -1,7 +1,8 @@
-import {getRandomArrayElement, getRandomFloatNumber} from './utils.js';
+import {getRandomFloatNumber} from '../utils.js';
 
 const CONTRACTORS_AMOUNT = 10;
 const contractorsNamesArray = ['Emily', 'James', 'Sophia', 'Liam', 'Olivia', 'Noah', 'Ava', 'Elijah', 'Mia', 'Lucas'];
+
 
 const createContractor = (index) => ({
   id: index,
@@ -10,9 +11,9 @@ const createContractor = (index) => ({
     amount: getRandomFloatNumber(1, 2000)
   },
   exchangeRate: getRandomFloatNumber(1000, 3000),
-  isVerified: false,
+  isVerified: index % 2 === 0,
   status: 'seller',
-  userName: getRandomArrayElement(contractorsNamesArray),
+  userName: contractorsNamesArray[index],
   paymentMethods: [
     {
       currency: 'RUB',

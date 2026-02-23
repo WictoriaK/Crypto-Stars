@@ -21,7 +21,9 @@ const getRandomFloatNumber = (a, b, digits = 1) => {
   return +result.toFixed(digits);
 };
 
+const isEscapeKey = (evt) => evt.keyCode === 27;
+const isEnterKey = (evt) => evt.keyCode === 13;
 
 const getRandomArrayElement = (array) => array[getRandomPositiveInteger(0, array.length - 1)];
 
-export {getRandomArrayElement, getRandomFloatNumber};
+export {getRandomArrayElement, getRandomFloatNumber, isEscapeKey, isEnterKey, getRandomPositiveInteger};

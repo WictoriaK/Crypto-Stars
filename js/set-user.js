@@ -1,4 +1,4 @@
-import {userProfile} from './user-data.js';
+import {userProfile} from './mock/user-data.js';
 
 const userProfileElement = document.querySelector('.user-profile');
 const userCryptoBalanceElement = userProfileElement.querySelector('#user-crypto-balance');
