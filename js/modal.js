@@ -5,8 +5,6 @@ const modalElement = document.querySelector('.modal');
 const userListTableElement = document.querySelector('.users-list__table');
 const closeModalBtn = modalElement.querySelector('.modal__close-btn');
 
-
-
 const getUserData = (id) => {
   const row = document.querySelector(`tr[data-user="${id}"]`);
 
