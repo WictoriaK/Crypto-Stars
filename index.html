@@ -10,7 +10,9 @@
     <link rel="preload" href="fonts/exo2-regular.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="fonts/exo2-semibold.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="fonts/exo2-bold.woff2" as="font" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.min.css">
+
+    <link rel="stylesheet" href="leaflet/leaflet.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -216,7 +218,7 @@
                     </div>
                 </div>
 
-                <!-- При переключении на карту блок .users-list нужно скрыть. Способ сокрытия подойдёт любой -->
+<!--                 При переключении на карту блок .users-list нужно скрыть. Способ сокрытия подойдёт любой -->
                 <div class="users-list">
                     <table class="users-list__table tab-item active">
                         <thead class="users-list__table-head">
@@ -251,16 +253,10 @@
                 </div>
             </div>
 
-            <!-- При переключении на карту нужно отобразить данный контейнер -->
-            <div class="container" style="display: none">
-                <div class="map">
-                    <!--
-                        Карту нужно отрисовать в этот контейнер. Иконки для карты -
-                        img/pin.svg и img/pin-verified.svg для обычных пользователей
-                        и для верифицированных соответственно.
 
-                        Контент для балуна вы найдёте в шаблоне #map-baloon__template
-                    -->
+            <div class="container hidden" id="map">
+                <div class="map">
+
                 </div>
             </div>
         </main>
@@ -614,6 +610,7 @@
         </div>
     </template>
 
+    <script src="leaflet/leaflet.js"></script>
     <script src="./js/main.js" type="module"></script>
 
 </body>

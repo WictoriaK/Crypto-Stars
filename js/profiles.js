@@ -7,7 +7,7 @@ const USER_TYPES = {
 };
 
 const profilesListElement = document.querySelector('.users-list__table-body');
-const tabsControlsElement = document.querySelector('.tabs__controls');
+const tabsControlsElement = document.querySelector('.tabs--toggle-buy-sell .tabs__controls');
 const checkedUsersButton = document.querySelector('#checked-users');
 
 const similarProfilesList = createProfilesList();
@@ -19,6 +19,7 @@ const [sellers, buyers] = similarProfilesList.reduce((accum, profile) => {
 },
   [[], []]
 );
+
 
 const verifiedSellers = sellers.filter((seller) => seller.isVerified);
 const verifiedBuyers = buyers.filter((seller) => seller.isVerified);
@@ -138,13 +139,13 @@ const updateProfilesDisplay = () => {
 }
 
 const handeTabClick = (evt) => {
-  const clickedTab = evt.target.closest('.tabs__control');
+  const clickedTab = evt.target.closest('.tabs--toggle-buy-sell .tabs__control');
 
   if (!clickedTab) {
     return
   }
 
-  document.querySelectorAll('.tabs__control.is-active').forEach(tab => {
+  document.querySelectorAll('.tabs--toggle-buy-sell .tabs__control.is-active').forEach(tab => {
     tab.classList.remove('is-active');
   });
 
@@ -174,5 +175,5 @@ const init = () => {
 };
 
 
-export { init }
+export { init, sellers, verifiedSellers, calculateSellerLimit, createProfileBadgesHTML, checkedUsersButton }
 
