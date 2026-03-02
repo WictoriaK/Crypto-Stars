@@ -7,6 +7,7 @@ const statusArray = ['seller', 'buyer'];
 
 const createProfile = (index) => {
   const status = getRandomArrayElement(statusArray);
+  const provider = getRandomArrayElement(['QIWI', 'Cash in person']);
 
   return {
     id: index,
@@ -27,8 +28,13 @@ const createProfile = (index) => {
         },
         {
           currency: 'RUB',
-          provider: 'Sberbank',
-          accountNumber: '0000 0000 0000 9567'
+          provider,
+          ...(provider === 'Cash in person' && {
+            coords: {
+              lat: 59.96925,
+              lng: 30.31730
+            }
+          })
         }
       ],
     }),

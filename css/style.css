@@ -626,6 +626,8 @@ button,
   padding: 0 40px;
 }
 
+
+
 .container--lightbackground .message {
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -2153,4 +2155,13 @@ button,
     color: #2cc2ba;
     background-color: #eefaf9;
   }
+}
+
+#map {
+  max-width: 1360px;
+  width: 100%
+}
+
+.hidden {
+  display: none;
 }
