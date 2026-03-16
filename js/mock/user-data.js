@@ -3,7 +3,7 @@ export const userProfile = {
   balances: [
     {
       currency: 'RUB',
-      amount: 9287533
+      amount: 500
     },
     {
       currency: 'KEKS',
@@ -12,7 +12,7 @@ export const userProfile = {
   ],
   wallet: {
     currency: 'KEKS',
-    address: 'dlob8a85kkvey8eb8aejy0uq3bkkgu93czkw185k'
+    address: 'o6j428495spjy20pwwer0elobwz8lvwksk2ffwxd'
   },
   paymentMethods: [
     {

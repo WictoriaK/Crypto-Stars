@@ -1,4 +1,4 @@
-import {getRandomFloatNumber, getRandomArrayElement} from '../utils.js';
+import {getRandomArrayElement} from '../utils.js';
 
 const PROFILES_AMOUNT = 20;
 const profileNamesArray = ['Emily', 'James', 'Sophia', 'Liam', 'Olivia', 'Noah', 'Ava', 'Elijah', 'Mia', 'Lucas'];
@@ -7,15 +7,15 @@ const statusArray = ['seller', 'buyer'];
 
 const createProfile = (index) => {
   const status = getRandomArrayElement(statusArray);
-  const provider = getRandomArrayElement(['QIWI', 'Cash in person']);
+  const provider = getRandomArrayElement(['QIWI', 'Sberbank', 'Cash in person']);
 
   return {
     id: index,
     balance: {
       currency: 'KEKS',
-      amount: getRandomFloatNumber(1, 2000)
+      amount: 400
     },
-    exchangeRate: getRandomFloatNumber(1000, 3000),
+    exchangeRate: 100,
     isVerified: index % 2 === 0,
     status: status,
     userName: getRandomArrayElement(profileNamesArray),
@@ -23,22 +23,27 @@ const createProfile = (index) => {
       paymentMethods: [
         {
           currency: 'RUB',
-          provider: 'QIWI',
+          provider: provider,
           accountNumber: '0000 0000 0000 3605'
         },
         {
           currency: 'RUB',
-          provider,
-          ...(provider === 'Cash in person' && {
-            coords: {
-              lat: 59.96925,
-              lng: 30.31730
-            }
-          })
-        }
+          provider: 'QIWI',
+          accountNumber: '0000 0000 0000 3600'
+        },
+        {
+          currency: 'RUB',
+          provider: 'Cash in person'
+        },
       ],
+      ...(provider === 'Cash in person' && {
+        coords: {
+          lat: 59.96925,
+          lng: 30.31730
+        }
+      })
     }),
-    minAmount: 1
+    minAmount: 50
   };
 };
 

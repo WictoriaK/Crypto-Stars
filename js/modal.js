@@ -1,50 +1,45 @@
 import {isEscapeKey, isEnterKey} from './utils.js';
+import {modalElement, getProfileData, setStaticData} from './modal-sellers.js';
+import {userProfile} from './mock/user-data.js';
 
-const bodyElement = document.querySelector('body');
-const modalElement = document.querySelector('.modal');
+const bodyElement = document.body;
 const userListTableElement = document.querySelector('.users-list__table');
 const closeModalBtn = modalElement.querySelector('.modal__close-btn');
+const modalOverlayElement = document.querySelector('.modal__overlay');
+const modalFormElement = modalElement.querySelector('.modal-buy');
+const cryptoNumberElement = modalFormElement.querySelector('.custom-input__crypto-number');
 
-const getUserData = (id) => {
-  const row = document.querySelector(`tr[data-user="${id}"]`);
+let currentUserData = null;
 
-  if (!row) {
-    return null;
-  }
+const setCryptoNumber = () => {
+  cryptoNumberElement.placeholder = userProfile?.wallet?.address;
+  cryptoNumberElement.value = userProfile?.wallet?.address;
+}
 
-  const cells = row.querySelectorAll('td');
-
-  if(cells.length < 5) {
-    return null;
-  }
-
-  return {
-    name: cells[0].textContent.trim(),
-    exchangeRate: cells[2].textContent.trim(),
-    cashlimit: cells[3].textContent.trim(),
-  };
+const clearProfileModalData = () => {
+  modalFormElement.reset();
 };
 
-const setData = (userData) => {
-  modalElement.querySelector('.transaction-info__item--name').textContent = userData.name;
-  modalElement.querySelector('.transaction-info__item--exchangerate .transaction-info__data').textContent = userData.exchangeRate;
-  modalElement.querySelector('.transaction-info__item--cashlimit .transaction-info__data').textContent = userData.cashlimit;
-};
+const showModal = (userId, userData) => {
+  modalElement.dataset.userId = userId;
+  setStaticData(userData);
+  setCryptoNumber();
 
-const showModal = (userData) => {
+  modalElement.classList.remove('hidden');
   bodyElement.classList.add('scroll-lock');
-  modalElement.style.display = 'flex';
 
-  setData(userData);
 
   document.addEventListener('keydown', onPopupEscKeydown);
+  modalOverlayElement.addEventListener('click', onModalOverlayClick);
 };
 
 const closeModal = () => {
+  clearProfileModalData();
   bodyElement.classList.remove('scroll-lock');
-  modalElement.style.display = 'none';
+  modalElement.classList.add('hidden');
 
   document.removeEventListener('keydown', onPopupEscKeydown);
+  modalOverlayElement.removeEventListener('click', onModalOverlayClick);
 };
 
 
@@ -55,28 +50,35 @@ function onPopupEscKeydown(evt) {
   }
 }
 
-userListTableElement.addEventListener('click', (evt) => {
+function onModalOverlayClick(evt) {
+  if(evt.target === modalOverlayElement) {
+    closeModal();
+  }
+}
+
+const handleUserAction = (evt) => {
+  if(evt.type === 'keydown' && !isEnterKey(evt)) {
+    return;
+  }
+
   const button = evt.target.closest('.sell-btn');
 
   if(!button) {
     return;
   }
+  const userId = button.dataset.user;
+  currentUserData = getProfileData(userId);
 
-  const userData = getUserData(button.dataset.user);
-
-  if(!userData) {
+  if(!currentUserData) {
     return;
   }
 
-  showModal(userData);
+  showModal(userId, currentUserData);
+};
 
-});
 
-userListTableElement.addEventListener('keydown', (evt) => {
-  if(isEnterKey(evt)) {
-    showModal();
-  }
-});
+userListTableElement.addEventListener('click', handleUserAction);
+userListTableElement.addEventListener('keydown', handleUserAction);
 
 
 closeModalBtn.addEventListener('click', () => closeModal());
@@ -87,3 +89,7 @@ closeModalBtn.addEventListener('keydown', (evt) => {
   }
 });
 
+
+export {
+  currentUserData
+}

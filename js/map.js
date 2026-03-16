@@ -1,17 +1,19 @@
-import {sellers, calculateSellerLimit, createProfileBadgesHTML, checkedUsersButton, init} from './profiles.js';
+import {PAYMENT_PROVIDER, VIEW_TYPE, MAIN_COORDINATES} from './const.js';
+import {getActiveTabDatasetValue, getItemsByType} from './global.js';
 
-const PAYMENT_PROVIDER = {
-  CASH: 'Cash in person',
-};
+import {
+  sellers,
+  calculateSellerLimit,
+  createProfileBadgesHTML,
+  checkedUsersButton,
+  verifiedSellers
+} from './profiles.js';
 
-const MAIN_COORDINATES = {
-  LAT: 59.92749,
-  LNG:  30.31127
-};
 
 const tabsControlsElement = document.querySelector('.tabs--toggle-list-map .tabs__controls');
 const userListElement = document.querySelector('.users-list');
 const mapElement = document.querySelector('#map');
+
 
 const mainPinIcon = L.icon({
   iconUrl: './img/pin.svg',
@@ -25,9 +27,24 @@ const verifiedPinMarkerIcon = L.icon({
   iconAnchor: [18, 46],
 });
 
-const sellersInCash = sellers.filter((seller) => seller.paymentMethods?.some(({provider}) => provider === PAYMENT_PROVIDER.CASH));
+const hasCashPayment = ({paymentMethods}) => paymentMethods?.some(({provider}) => provider === PAYMENT_PROVIDER.CASH);
 
+
+const sellersInCash = sellers.filter(hasCashPayment);
 const verifiedSellersInCash =  sellersInCash.filter(({isVerified}) => isVerified);
+
+const profilesMap = {
+  [VIEW_TYPE.LIST]: {
+    all: sellers,
+    verified: verifiedSellers,
+  },
+  [VIEW_TYPE.MAP]: {
+    all: sellersInCash,
+    verified: verifiedSellersInCash,
+  }
+}
+
+
 
 const createCustomPopup = (profile) => {
   const limit = calculateSellerLimit(profile);
@@ -55,11 +72,7 @@ const createCustomPopup = (profile) => {
         </div>`
 }
 
-const map = L.map('map').setView({
-  lat: MAIN_COORDINATES.LAT,
-  lng: MAIN_COORDINATES.LNG,
-}, 10);
-
+const map = L.map('map').setView(MAIN_COORDINATES, 10);
 
 L.tileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -68,16 +81,11 @@ L.tileLayer(
   },
 ).addTo(map);
 
-const getPinCoordinates = (sellerProfile) => {
-  const payment = sellerProfile?.paymentMethods?.find(({provider}) => provider === PAYMENT_PROVIDER.CASH)
-
-  return payment?.coords ?? null;
-}
-
+const getPinCoordinates = (sellerProfile) => sellerProfile?.coords ?? null;
 
 const markerGroup = L.layerGroup().addTo(map);
 
-const createMarker = (profile, pinIcon) => {
+const createMarker = (profile) => {
   const coords = getPinCoordinates(profile);
 
   if(!coords) {
@@ -86,13 +94,13 @@ const createMarker = (profile, pinIcon) => {
 
   const {lat, lng} = coords;
 
-  const mapPin = L.marker({
+  const mapPin = L.marker( {
       lat,
       lng,
     },
     {
       draggable: true,
-      icon: pinIcon
+      icon: getPinIcon(profile)
     },
   );
 
@@ -105,57 +113,63 @@ const getPinIcon = (profile) => {
     : mainPinIcon;
 };
 
+const getCurrentViewType = () => getActiveTabDatasetValue(tabsControlsElement, 'viewType', VIEW_TYPE.LIST);
 
-const renderProfiles = (profiles) => {
-  profiles.forEach((profile) => {
-    createMarker(profile, getPinIcon(profile));
-  });
-}
+const renderProfiles = (profiles) => profiles.forEach(createMarker);
 
-const getProfilesByType = (onlyVerified = false) => onlyVerified ? verifiedSellersInCash : sellersInCash;
 
 const updateProfilesDisplay = () => {
+  markerGroup.clearLayers();
 
   const onlyVerified = checkedUsersButton?.checked ?? false;
-  const profilesToRender = getProfilesByType(onlyVerified);
+  const profilesToRender = getItemsByType(
+    profilesMap,
+    getCurrentViewType(),
+    onlyVerified
+  );
 
   renderProfiles(profilesToRender);
 }
 
-const handleRadioChangeClick = (evt) => {
-  markerGroup.clearLayers();
-  updateProfilesDisplay()
-}
-
-const initMap = () => {
-  updateProfilesDisplay();
-
-  if(checkedUsersButton) {
-    checkedUsersButton.addEventListener('change', handleRadioChangeClick);
-  }
-};
-
-const handeTabClick = (evt) => {
+const handleTabClick = (evt) => {
   const clickedTab = evt.target.closest('.tabs--toggle-list-map .tabs__control');
 
   if (!clickedTab) {
     return
   }
 
-  document.querySelectorAll('.tabs--toggle-list-map .tabs__control.is-active').forEach(tab => {
+  tabsControlsElement.querySelectorAll('.tabs__control').forEach(tab => {
     tab.classList.remove('is-active');
   });
 
   clickedTab.classList.add('is-active');
 
-  userListElement.classList.add('hidden');
-  mapElement.classList.remove('hidden');
+  const viewType = clickedTab.dataset.viewType;
 
-  initMap;
+  userListElement.classList.toggle('hidden', viewType !== VIEW_TYPE.LIST);
+  mapElement.classList.toggle('hidden', viewType !== VIEW_TYPE.MAP);
+
+  updateProfilesDisplay();
 }
 
+const handleRadioChangeClick = (evt) => {
+  updateProfilesDisplay();
+}
 
-tabsControlsElement.addEventListener('click', handeTabClick);
+const initMap = () => {
+  tabsControlsElement.addEventListener('click', handleTabClick);
+
+  if(checkedUsersButton) {
+    checkedUsersButton.addEventListener('change', handleRadioChangeClick);
+  }
+
+  updateProfilesDisplay();
+};
+
+
+initMap();
+
+
 
 
 

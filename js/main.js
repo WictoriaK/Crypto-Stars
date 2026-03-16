@@ -1,4 +1,4 @@
-import {renderUserProfile} from './set-user.js';
+import {renderUserProfile} from './user.js';
 import './modal.js';
 import {init} from './profiles.js';
 import './map.js';

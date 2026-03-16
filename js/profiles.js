@@ -1,10 +1,9 @@
+import {USER_TYPES} from './const.js';
+import {getActiveTabDatasetValue, getItemsByType} from './global.js';
+
 import {createProfilesList} from './mock/profiles-data.js';
 import {defaultProfile} from './utils.js';
 
-const USER_TYPES = {
-  SELLER: 'seller',
-  BUYER: 'buyer'
-};
 
 const profilesListElement = document.querySelector('.users-list__table-body');
 const tabsControlsElement = document.querySelector('.tabs--toggle-buy-sell .tabs__controls');
@@ -24,6 +23,16 @@ const [sellers, buyers] = similarProfilesList.reduce((accum, profile) => {
 const verifiedSellers = sellers.filter((seller) => seller.isVerified);
 const verifiedBuyers = buyers.filter((seller) => seller.isVerified);
 
+const profilesList = {
+  [USER_TYPES.SELLER]: {
+    all: sellers,
+    verified: verifiedSellers,
+  },
+  [USER_TYPES.BUYER]: {
+    all: buyers,
+    verified: verifiedBuyers,
+  }
+}
 
 const isSeller = (profile) => profile.status === USER_TYPES.SELLER;
 
@@ -66,7 +75,7 @@ const createTableRow = (profile = defaultProfile) => {
       <td class="users-list__table-cell users-list__table-name">${verifiedIcon}<span>${profile.userName}</span></td>
       <td class="users-list__table-cell users-list__table-currency">${profile.balance.currency}</td>
       <td class="users-list__table-cell users-list__table-exchangerate">${profile.exchangeRate}</td>
-      <td class="users-list__table-cell users-list__table-cashlimit">${profile.minAmount} ₽-${sellerLimit} ₽</td>
+      <td class="users-list__table-cell users-list__table-cashlimit">${profile.minAmount} ₽ - ${sellerLimit} ₽</td>
       <td class="users-list__table-cell users-list__table-payments">
        ${paymentBadges}
       </td>
@@ -95,45 +104,12 @@ const renderProfiles = (profiles = []) => {
 };
 
 
-const getCurrentUserType = () => {
-  const activeTab = document.querySelector('.tabs__control.is-active');
+const getCurrentUserType = () => getActiveTabDatasetValue(tabsControlsElement, 'userType', USER_TYPES.SELLER);
 
-  return activeTab ? activeTab.dataset.userType : USER_TYPES.SELLER;
-};
-
-
-const getProfilesByType = (userType, onlyVerified = false) => {
-  if (onlyVerified) {
-    switch (userType) {
-      case USER_TYPES.SELLER:
-        return verifiedSellers;
-
-      case USER_TYPES.BUYER:
-        return verifiedBuyers;
-
-      default:
-        console.warn('Unknown user type:', userType);
-        return [];
-    }
-  }
-
-  switch (userType) {
-    case USER_TYPES.SELLER:
-      return sellers;
-
-    case USER_TYPES.BUYER:
-      return buyers;
-
-    default:
-      console.warn('Unknown user type:', userType);
-      return [];
-  }
-};
 
 const updateProfilesDisplay = () => {
-  const currentUserType = getCurrentUserType();
   const onlyVerified = checkedUsersButton?.checked || false;
-  const profilesToRender = getProfilesByType(currentUserType, onlyVerified);
+  const profilesToRender = getItemsByType(profilesList, getCurrentUserType(), onlyVerified);
 
   renderProfiles(profilesToRender);
 }
@@ -175,5 +151,5 @@ const init = () => {
 };
 
 
-export { init, sellers, verifiedSellers, calculateSellerLimit, createProfileBadgesHTML, checkedUsersButton }
+export { init, sellers, verifiedSellers, calculateSellerLimit, createProfileBadgesHTML, checkedUsersButton, renderProfiles, similarProfilesList };
 
